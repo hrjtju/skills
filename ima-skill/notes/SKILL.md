@@ -1,8 +1,3 @@
----
-name: ima-skill-notes
-description: IMA 笔记管理子模块 — 搜索/浏览笔记、获取笔记内容、新建笔记、追加内容到已有笔记。由 ima-skill 主技能按需调用。
----
-
 # Notes (笔记)
 
 > ⛔ Before ANY write (`import_doc`/`append_doc`): validate ALL string fields (`content`, `title`) are legal UTF-8.

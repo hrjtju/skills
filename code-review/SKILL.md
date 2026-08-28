@@ -1,102 +1,101 @@
 ---
 name: code-review
-description: Multi-agent pull request code review with false-positive filtering. Use when asked to review a PR, review a pull request, do a code review on GitHub, check a PR for bugs or CLAUDE.md/AGENTS.md compliance, or post review comments back to GitHub. Focuses on high-confidence bugs and project-convention violations, not nitpicks.
+description: Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes — Standards (does the code follow this repo's documented coding standards?) and Spec (does the code match what the originating issue/PRD asked for?). Runs both reviews in parallel sub-agents and reports them side by side. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to "review since X".
 ---
 
-# Pull Request Code Review
+Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
 
-Adapted from the official Anthropic `code-review` plugin (`plugins/code-review/commands/code-review.md`).
-Upstream ships this as a `/code-review` slash command; here it is a skill so any harness can invoke it.
+- **Standards** — does the code conform to this repo's documented coding standards?
+- **Spec** — does the code faithfully implement the originating issue / PRD / spec?
 
-Provide a code review for the given pull request. Use `gh` for all GitHub interaction (never web fetch).
+Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings.
 
-## Procedure
+The issue tracker should have been provided to you — run `/setup-matt-pocock-skills` if `docs/agents/issue-tracker.md` is missing.
 
-Make a todo list first. Where the steps below say "agent", dispatch a subagent if the harness
-supports it (cheap/fast model for mechanical steps, stronger model for review steps); otherwise do
-the step yourself in sequence.
+## Process
 
-1. **Eligibility check.** Check whether the PR (a) is closed, (b) is a draft, (c) does not need review
-   (automated PR, or trivially and obviously fine), or (d) already has a review from you. If any hold,
-   stop — do not proceed.
-2. **Collect convention files.** Get a list of file *paths* (not contents) to relevant `CLAUDE.md` /
-   `AGENTS.md` files: the repo root one, plus any in directories the PR modified.
-3. **Summarize the change.** View the PR and produce a summary of what it does.
-4. **Five parallel reviewers.** Each returns a list of issues plus the reason each was flagged
-   (convention adherence, bug, historical git context, ...):
-   - Agent 1: audit changes against `CLAUDE.md`/`AGENTS.md`. These files are guidance for writing
-     code, so not every instruction applies to review.
-   - Agent 2: read only the diff and do a shallow scan for obvious bugs. Do not pull extra context.
-     Focus on large bugs; skip nitpicks; ignore likely false positives.
-   - Agent 3: read `git blame`/history of the modified code and find bugs visible only in that context.
-   - Agent 4: read previous PRs touching these files; check whether comments there also apply here.
-   - Agent 5: read code comments in the modified files; check the change complies with their guidance.
-5. **Confidence scoring.** For each issue, one agent scores confidence 0–100 given the PR, the issue,
-   and the convention-file list. For issues flagged from `CLAUDE.md`/`AGENTS.md`, verify the file
-   actually calls out that specific issue. Rubric (give verbatim to the scorer):
-   - 0: not confident at all — false positive that fails light scrutiny, or a pre-existing issue.
-   - 25: somewhat confident — might be real, might not; unverified. Stylistic issues not explicitly
-     called out in the relevant convention file land here.
-   - 50: moderately confident — verified real, but possibly a nitpick or rare in practice.
-   - 75: highly confident — double-checked, very likely hit in practice, current approach insufficient,
-     or explicitly mentioned in the relevant convention file.
-   - 100: certain — confirmed real, frequent in practice, evidence directly confirms it.
-6. **Filter to score >= 80.** If nothing survives, do not proceed to commenting with issues.
-7. **Re-check eligibility** (repeat step 1) before posting.
-8. **Post the comment** with `gh`. Keep it brief, no emojis, link and cite relevant code/files/URLs.
+### 1. Pin the fixed point
 
-## False positives (for steps 4 and 5)
+Whatever the user said is the fixed point — a commit SHA, branch name, tag, `main`, `HEAD~5`, etc. If they didn't specify one, ask for it.
 
-- Pre-existing issues.
-- Things that look like a bug but are not.
-- Pedantic nitpicks a senior engineer would not raise.
-- Anything a linter, typechecker, or compiler catches (missing imports, type errors, broken tests,
-  formatting). Do not run builds yourself — assume CI covers them.
-- General code-quality complaints (test coverage, vague security, docs) unless the convention file
-  explicitly requires them.
-- Issues called out in a convention file but explicitly silenced in code (e.g. a lint-ignore comment).
-- Functional changes that are plainly intentional or part of the broader change.
-- Real issues on lines the PR did not modify.
+Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
 
-## Notes
+Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty. A bad ref or empty diff should fail here — not inside two parallel sub-agents.
 
-- Do not check build signal or try to build/typecheck the app.
-- Cite and link every bug. If you invoke a convention file, link it.
-- Code links must use the **full commit SHA** — `$(git rev-parse HEAD)` inside the comment will not
-  work, because the comment is rendered as Markdown:
-  `https://github.com/owner/repo/blob/<full-sha>/path/file.py#L10-L15`
-  - `#` after the filename, range as `L[start]-L[end]`, repo must match the reviewed repo.
-  - Include at least one line of context before and after (commenting on 5–6 → link `L4-L7`).
+### 2. Identify the spec source
 
-## Comment format
+Look for the originating spec, in this order:
 
-Follow precisely. With issues found:
+1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch via the workflow in `docs/agents/issue-tracker.md`.
+2. A path the user passed as an argument.
+3. A PRD/spec file under `docs/`, `specs/`, or `.scratch/` matching the branch name or feature.
+4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
 
-```markdown
-### Code review
+### 3. Identify the standards sources
 
-Found 3 issues:
+Anything in the repo that documents how code should be written, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`.
 
-1. <brief description of bug> (CLAUDE.md says "<...>")
+On top of whatever the repo documents, the Standards axis always carries the **smell baseline** below — a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing. Two rules bind it:
 
-<full-sha permalink with line range>
+- **The repo overrides.** A documented repo standard always wins; where it endorses something the baseline would flag, suppress the smell.
+- **Always a judgement call.** Each smell is a labelled heuristic ("possible Feature Envy"), never a hard violation — and, like any standard here, skip anything tooling already enforces.
 
-2. <brief description of bug> (some/other/CLAUDE.md says "<...>")
+Each smell reads *what it is* → *how to fix*; match it against the diff:
 
-<full-sha permalink with line range>
+- **Mysterious Name** — a function, variable, or type whose name doesn't reveal what it does or holds. → rename it; if no honest name comes, the design's murky.
+- **Duplicated Code** — the same logic shape appears in more than one hunk or file in the change. → extract the shared shape, call it from both.
+- **Feature Envy** — a method that reaches into another object's data more than its own. → move the method onto the data it envies.
+- **Data Clumps** — the same few fields or params keep travelling together (a type wanting to be born). → bundle them into one type, pass that.
+- **Primitive Obsession** — a primitive or string standing in for a domain concept that deserves its own type. → give the concept its own small type.
+- **Repeated Switches** — the same `switch`/`if`-cascade on the same type recurs across the change. → replace with polymorphism, or one map both sites share.
+- **Shotgun Surgery** — one logical change forces scattered edits across many files in the diff. → gather what changes together into one module.
+- **Divergent Change** — one file or module is edited for several unrelated reasons. → split so each module changes for one reason.
+- **Speculative Generality** — abstraction, parameters, or hooks added for needs the spec doesn't have. → delete it; inline back until a real need shows.
+- **Message Chains** — long `a.b().c().d()` navigation the caller shouldn't depend on. → hide the walk behind one method on the first object.
+- **Middle Man** — a class or function that mostly just delegates onward. → cut it, call the real target direct.
+- **Refused Bequest** — a subclass or implementer that ignores or overrides most of what it inherits. → drop the inheritance, use composition.
 
-3. <brief description of bug> (bug due to <file and code snippet>)
+### 4. Spawn both sub-agents in parallel
 
-<full-sha permalink with line range>
-```
+Send a single message with two `Agent` tool calls. Use the `general-purpose` subagent for both.
 
-With nothing found:
+> **pi has no sub-agent tool.** Two substitutes, in order of preference:
+> 1. Shell out to two separate pi instances, e.g.
+>    `pi -p "<standards brief + diff cmd + standards files + baseline>" > /tmp/cr-standards.md &`
+>    and the same for the spec brief, then `wait` and read both files. This preserves the
+>    context-isolation the two axes depend on.
+> 2. If that is unavailable, run the two axes as **two strictly separate sequential passes**:
+>    finish the Standards pass and write its report to a file *before* reading anything spec-related,
+>    then do the Spec pass. Never interleave them — the whole point is that neither pass sees the
+>    other's findings.
+>
+> Either way, step 5 still aggregates verbatim without merging or reranking.
 
-```markdown
-### Code review
+**Standards sub-agent prompt** — include:
 
-No issues found. Checked for bugs and CLAUDE.md compliance.
-```
+- The full diff command and commit list.
+- The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full — the sub-agent has no other access to it.
+- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls — documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Under 400 words."
 
-Upstream appends a "Generated with Claude Code" footer and a 👍/👎 feedback line; drop or replace it
-to match the harness actually posting the review.
+**Spec sub-agent prompt** — include:
+
+- The diff command and commit list.
+- The path or fetched contents of the spec.
+- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
+
+If the spec is missing, skip the Spec sub-agent and note this in the final report.
+
+### 5. Aggregate
+
+Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings — the two axes are deliberately separate (see _Why two axes_).
+
+End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes — that's the reranking the separation exists to prevent.
+
+## Why two axes
+
+A change can pass one axis and fail the other:
+
+- Code that follows every standard but implements the wrong thing → **Standards pass, Spec fail.**
+- Code that does exactly what the issue asked but breaks the project's conventions → **Spec pass, Standards fail.**
+
+Reporting them separately stops one axis from masking the other.
