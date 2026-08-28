@@ -1,0 +1,24 @@
+name: latex-fmt
+description: Reformat LaTeX papers for target journals and conferences
+type: skill
+skill_file: latex-fmt/SKILL.md
+platforms:
+  claude_code: {}
+  openai:
+    model: gpt-4.1
+auto_activate:
+  - triggers:
+    - "format for.*"
+    - "reformat"
+    - "apply.*template"
+    - "switch to.*template"
+    - "change to.*format"
+    - "/latex-fmt"
+    - "投稿格式化"
+    - "改成.*模板"
+    - "format for KDD"
+    - "reformat for COLING"
+    - "format for SIGIR"
+    - "format for Interspeech"
+    file_patterns:
+    - "*.tex"

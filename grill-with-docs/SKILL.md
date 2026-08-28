@@ -1,0 +1,7 @@
+---
+name: grill-with-docs
+description: A relentless interview to sharpen a plan or design, which also creates docs (ADR's and glossary) as we go.
+disable-model-invocation: true
+---
+
+Run a `/skill:grilling` session, using the `domain-modeling` skill (both are installed; upstream writes these as `/grilling` and `/domain-modeling` — in pi the slash form is `/skill:<name>`).

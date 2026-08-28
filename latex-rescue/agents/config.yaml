@@ -1,0 +1,19 @@
+name: latex-rescue
+description: Diagnose and fix LaTeX compilation errors
+type: skill
+skill_file: latex-rescue/SKILL.md
+platforms:
+  claude_code: {}
+  openai:
+    model: gpt-4.1
+auto_activate:
+  - triggers:
+    - "fix.*latex"
+    - "latex.*wont compile"
+    - "pdflatex.*error"
+    - "compilation.*failed"
+    - "编译报错"
+    - "帮我修.*latex"
+    - "/latex-rescue"
+    file_patterns:
+    - "*.tex"
