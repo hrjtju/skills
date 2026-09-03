@@ -1,7 +1,7 @@
 ---
 name: firecrawl
 description: |
-  Search, scrape, and interact with the web via the Firecrawl CLI. Use this skill whenever the user wants to search the web, find articles, research a topic, look something up online, scrape a webpage, grab content from a URL, get data from a website, crawl documentation, download a site, or interact with pages that need clicks or logins. Also use when they say "fetch this page", "pull the content from", "get the page at https://", or reference external websites. This provides real-time web search with full page content and interact capabilities — beyond what Claude can do natively with built-in tools. Do NOT trigger for local file operations, git commands, deployments, or code editing tasks.
+  Search, scrape, and interact with the web via the Firecrawl CLI. Use this skill whenever the user wants to search the web, find articles, research a topic, look something up online, scrape a webpage, grab content from a URL, get data from a website, crawl documentation, download a site, or interact with pages that need clicks or logins. Also use when they say "fetch this page", "pull the content from", "get the page at https://", or reference external websites. This provides real-time web search with full page content and interact capabilities — beyond what Claude can do natively with built-in tools. 本 skill 统一覆盖 Firecrawl 全部操作：search（搜网页/找文章/查资料）、scrape（抓取页面）、map（站点地图/找 URL）、crawl（批量爬取站点/文档区）、download（整站下载到本地）、parse（解析本地 PDF/DOCX/XLSX/HTML）、interact（点击/填表/登录/翻页）、monitor（监控页面变化与提醒）、agent（复杂站点结构化数据提取）。触发后按需读取 references/ 下对应操作文件。 Do NOT trigger for local file operations, git commands, deployments, or code editing tasks.
 allowed-tools:
   - Bash(firecrawl *)
   - Bash(npx firecrawl *)
@@ -210,15 +210,15 @@ Use `modes: ["json", "git-diff"]` for **mixed mode**: you get both `diff.json` (
 
 ## When to Load References
 
-- **Searching the web or finding sources first** -> [firecrawl-search](../firecrawl-search/SKILL.md)
-- **Scraping a known URL** -> [firecrawl-scrape](../firecrawl-scrape/SKILL.md)
-- **Finding URLs on a known site** -> [firecrawl-map](../firecrawl-map/SKILL.md)
-- **Bulk extraction from a docs section or site** -> [firecrawl-crawl](../firecrawl-crawl/SKILL.md)
-- **AI-powered structured extraction from complex sites** -> [firecrawl-agent](../firecrawl-agent/SKILL.md)
-- **Clicks, forms, login, pagination, or post-scrape browser actions** -> [firecrawl-interact](../firecrawl-interact/SKILL.md)
-- **Downloading a site to local files** -> [firecrawl-download](../firecrawl-download/SKILL.md)
-- **Parsing a local file (PDF, DOCX, XLSX, HTML, etc.)** -> [firecrawl-parse](../firecrawl-parse/SKILL.md)
-- **Detecting content changes on a website and getting notified by webhook or email (pricing, jobs, posts, docs, status pages, anything ongoing)** -> [firecrawl-monitor](../firecrawl-monitor/SKILL.md)
+- **Searching the web or finding sources first** -> `references/search.md`
+- **Scraping a known URL** -> `references/scrape.md`
+- **Finding URLs on a known site** -> `references/map.md`
+- **Bulk extraction from a docs section or site** -> `references/crawl.md`
+- **AI-powered structured extraction from complex sites** -> `references/agent.md`
+- **Clicks, forms, login, pagination, or post-scrape browser actions** -> `references/interact.md`
+- **Downloading a site to local files** -> `references/download.md`
+- **Parsing a local file (PDF, DOCX, XLSX, HTML, etc.)** -> `references/parse.md`
+- **Detecting content changes on a website and getting notified by webhook or email (pricing, jobs, posts, docs, status pages, anything ongoing)** -> `references/monitor.md`
 - **Install, auth, or setup problems** -> [rules/install.md](rules/install.md)
 - **Output handling and safe file-reading patterns** -> [rules/security.md](rules/security.md)
 - **Integrating Firecrawl into an app, adding `FIRECRAWL_API_KEY` to `.env`, or choosing endpoint usage in product code** -> use the `firecrawl-build` skills (already installed alongside this CLI skill)
@@ -279,7 +279,7 @@ firecrawl search-feedback "$SEARCH_ID" \
 
 The most useful field is `--missing-content`: an _array_ of specific pieces of content you expected to find but didn't. Use one entry per missing topic. Bad/partial feedback with detailed `--missing-content` is just as valuable as good feedback.
 
-**Opt out:** `export FIRECRAWL_NO_SEARCH_FEEDBACK=1` makes the CLI skip every feedback call silently. Respect that flag — do not try to work around it. See [firecrawl-search](../firecrawl-search/SKILL.md) for the full pattern.
+**Opt out:** `export FIRECRAWL_NO_SEARCH_FEEDBACK=1` makes the CLI skip every feedback call silently. Respect that flag — do not try to work around it. See `references/search.md` for the full pattern.
 
 ## Endpoint job feedback
 
