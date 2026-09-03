@@ -193,8 +193,8 @@ After analysis, output a clean report:
 - Fill in content that you cannot read from the paper. If text extraction failed for a section, say "Section X was not readable from the PDF" rather than inferring its content
 
 **AFTER READING:**
-- If the user is writing a paper that builds on this work, suggest `/latex-polish` for improving their draft's academic style
-- If the user needs to reformat their paper for a different venue, suggest `/latex-fmt`
+- If the user is writing a paper that builds on this work, suggest `/latex-academic` for improving their draft's academic style
+- If the user needs to reformat their paper for a different venue, suggest `/latex-academic`
 
 **ALWAYS:**
 - Distinguish between what the paper claims and what it actually proves

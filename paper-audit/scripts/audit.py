@@ -364,7 +364,7 @@ VENUE_CONFIG: dict[str, dict] = {
 
 SKILLS_ROOT = Path(__file__).resolve().parent.parent.parent
 SCRIPTS_AUDIT = Path(__file__).resolve().parent  # paper-audit's own scripts
-SCRIPTS_EN = SKILLS_ROOT / "latex-paper-en" / "scripts"
+SCRIPTS_EN = SKILLS_ROOT / "latex-academic" / "scripts"
 SCRIPTS_ZH = SKILLS_ROOT / "latex-thesis-zh" / "scripts"
 SCRIPTS_TYPST = SKILLS_ROOT / "typst-paper" / "scripts"
 

@@ -1,13 +1,13 @@
 """
 Document Parsers for Paper Audit Skill.
 
-Vendored copy aligned with latex-paper-en/scripts/parsers.py for the shared
+Vendored copy aligned with latex-academic/scripts/parsers.py for the shared
 core (DocumentParser ABC, LatexParser, TypstParser, helpers). Only the
 ``get_parser`` factory is extended to dispatch PDF inputs through
 ``pdf_parser.PdfParser`` so the audit pipeline can ingest .tex / .typ / .pdf
 uniformly.
 
-Alignment with the canonical (latex-paper-en) copy is enforced by
+Alignment with the canonical (latex-academic) copy is enforced by
 ``tests/contracts/test_parsers_alignment.py``. When changing shared behavior, update the
 canonical copy first and let the alignment test guide the rest.
 """

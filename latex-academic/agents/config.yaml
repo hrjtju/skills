@@ -1,0 +1,33 @@
+name: latex-academic
+description: Unified LaTeX skill — papers, documents, figures/diagrams, PDF→LaTeX, cross-referencing
+type: skill
+skill_file: latex-academic/SKILL.md
+platforms:
+  claude_code: {}
+  openai:
+    model: gpt-4.1
+auto_activate:
+  - triggers:
+      - "fix my latex"
+      - "latex compile"
+      - "proofread.*paper"
+      - "rewrite related work"
+      - "format citations"
+      - "polish.*paper"
+      - "润色论文"
+      - "format for.*"
+      - "apply.*template"
+      - "convert.*(pdf|tex)"
+      - "pdf.*to.*latex"
+      - "TikZ diagram"
+      - "cleveref"
+      - "/latex"
+      - "/latex-fmt"
+      - "/latex-polish"
+      - "/latex-rescue"
+      - "/pdf2tex"
+    file_patterns:
+      - "*.tex"
+      - "*.sty"
+      - "*.cls"
+      - "*.bib"
