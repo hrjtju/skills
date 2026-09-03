@@ -7,7 +7,7 @@ description: >-
   投稿前自审, 审稿意见模拟, or 帮我审一下论文. Produce evidence-grounded Major Concerns,
   Minor Comments, and blocking flags. For multiple reviewers, keep every reviewer mutually
   blind in a separate context, freeze all reports before comparison, and create any synthesis
-  only afterward as a separate editor/author-facing artifact.
+  only afterward as a separate editor/author-facing artifact. 路由：本 skill = Nature 风格审稿人模拟报告；投稿 gate/readiness 审计与整改路线 → paper-audit；GitHub PR 代码评审 → pr-code-review。
 ---
 
 # Nature Reviewer Assessment Skill

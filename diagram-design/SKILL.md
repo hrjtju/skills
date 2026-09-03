@@ -1,6 +1,6 @@
 ---
 name: diagram-design
-description: Create technical and product diagrams — architecture, IT current-state, flowchart, sequence, state machine, ER / data model, timeline, swimlane, quadrant, radar / spider, loop / flywheel, nested, tree, org chart, layer stack, venn, pyramid / funnel, bar chart, line chart, Gantt, scatter plot, high-level, process, medallion, data flow, DP integration, DP security matrix — as standalone HTML files with inline SVG. Ships with a neutral editorial skin and a first-run gate that prompts users to customize the style guide (colors, fonts) from their own website before generating. Includes annotation-callout primitive and optional sketchy variant.
+description: Create technical and product diagrams — architecture, IT current-state, flowchart, sequence, state machine, ER / data model, timeline, swimlane, quadrant, radar / spider, loop / flywheel, nested, tree, org chart, layer stack, venn, pyramid / funnel, bar chart, line chart, Gantt, scatter plot, high-level, process, medallion, data flow, DP integration, DP security matrix — as standalone HTML files with inline SVG. Ships with a neutral editorial skin and a first-run gate that prompts users to customize the style guide (colors, fonts) from their own website before generating. Includes annotation-callout primitive and optional sketchy variant. 路由：架构/流程/时序/ER 等示意与产品图（HTML/SVG）；论文期刊数据图 → nature-figure 或 scipilot-figure-skill；神经网络结构图 → plot-neural-net。
 license: MIT
 metadata:
   version: "2.0"

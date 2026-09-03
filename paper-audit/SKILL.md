@@ -1,6 +1,6 @@
 ---
 name: paper-audit
-description: Reviewer-style audit and submission gate for academic papers in .tex, .typ, or .pdf. Use for peer-review critique, readiness/gate decisions, blocker triage, revision roadmaps, journal-style reports, and re-audits. Do not use for source editing, sentence polishing, bibliography search, or compile repair.
+description: Reviewer-style audit and submission gate for academic papers in .tex, .typ, or .pdf. Use for peer-review critique, readiness/gate decisions, blocker triage, revision roadmaps, journal-style reports, and re-audits. Do not use for source editing, sentence polishing, bibliography search, or compile repair. 路由：投稿 gate 审计与整改路线；纯审稿人视角模拟 → nature-reviewer。
 when_to_use: >-
   Trigger on "review my paper", "act as a reviewer", "simulate peer review", "audit this paper",
   "审稿", "投稿门控", "投稿前体检", "把把关", "看看能不能投", "出审稿意见",

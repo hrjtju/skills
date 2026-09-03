@@ -18,7 +18,7 @@ description: >-
  matplotlib、seaborn、plotly、误差棒、显著性标注、色盲安全配色、矢量图导出、
  中文论文图表、多面板。**即使用户只是给一批数据问"这个怎么画"或"用什么图
  好"，也应使用本技能——本技能首要能力是"判断该用什么图"，其次才是绘制。**
- 不做示意图、流程图、架构图。
+ 不做示意图、流程图、架构图。 路由：本 skill = 数据剖析→图型推荐→出版级成图的可视化顾问；已明确是期刊数据图且要 matplotlib/R 出版级实现 → nature-figure；架构/流程图（HTML/SVG）→ diagram-design；神经网络结构图 → plot-neural-net。
 ---
 
 # scipilot-figure-skill — 科研数据可视化顾问

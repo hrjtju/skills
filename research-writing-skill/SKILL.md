@@ -1,6 +1,6 @@
 ---
 name: research-writing-skill
-description: Chinese-first research paper writing, revision, polishing, section drafting, rebuttal, peer-review response, thesis prose improvement, and manuscript argument planning. Use when the user asks to write or revise论文正文, abstracts, introductions, methods, results, discussion, conclusions, related work, responses to reviewers, LaTeX/Overleaf text, or academic prose. Preserve formulas, English paper titles, terms, citations, and measured results.
+description: Chinese-first research paper writing, revision, polishing, section drafting, rebuttal, peer-review response, thesis prose improvement, and manuscript argument planning. Use when the user asks to write or revise论文正文, abstracts, introductions, methods, results, discussion, conclusions, related work, responses to reviewers, LaTeX/Overleaf text, or academic prose. Preserve formulas, English paper titles, terms, citations, and measured results. 路由：中文优先的通用科研写作/修订/回复审稿人；Nature 风格英文起草 → nature-writing；英文润色 → nature-polishing；ML/CV/NLP 论文 → research-paper-writing。
 ---
 
 # Research Writing Skill

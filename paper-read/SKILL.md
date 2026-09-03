@@ -1,6 +1,6 @@
 ---
 name: paper-read
-description: Read, analyze, and extract knowledge from academic papers. Handles PDFs and arXiv links. Produces structured summaries, identifies core contributions, evaluates methodology, and enables cross-paper comparison.
+description: Read, analyze, and extract knowledge from academic papers. Handles PDFs and arXiv links. Produces structured summaries, identifies core contributions, evaluates methodology, and enables cross-paper comparison. 路由：本 skill = 通用多层级阅读与跨论文对比；Zotero/CV-DL 笔记阅读 → paper-reader；结构化+PPT 分析 → paper-analyst；三遍法教学 → paper-reading-guide；双语全文对照 → nature-reader。
 version: 1.2.0
 triggers:
   - "read this paper"

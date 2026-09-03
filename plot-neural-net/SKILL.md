@@ -1,6 +1,6 @@
 ---
 name: plot-neural-net
-description: Draw neural network architecture diagrams using PlotNeuralNet (Python + LaTeX/TikZ). Use when the user wants to visualize a neural network architecture, draw a deep learning model, create a CNN/FCN/UNet/etc diagram, or generate publication-quality neural network figures.
+description: Draw neural network architecture diagrams using PlotNeuralNet (Python + LaTeX/TikZ). Use when the user wants to visualize a neural network architecture, draw a deep learning model, create a CNN/FCN/UNet/etc diagram, or generate publication-quality neural network figures. 路由：仅神经网络结构示意图（PlotNeuralNet 管线）；其它科研数据图 → nature-figure / scipilot-figure-skill；架构/流程示意图 → diagram-design。
 ---
 
 # PlotNeuralNet skill

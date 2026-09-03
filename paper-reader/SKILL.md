@@ -9,6 +9,8 @@ description: |
   "批判性分析这篇论文 ...", "读一下 Zotero 里的 XXX", "批量读一下 Zotero 里 VLA 分类下的论文"
 
   **重要触发词**: "读一下 XXX"、"读一下这篇"、"帮我读" → 必须调用此 skill
+
+  路由：本 skill = CV/DL 精读 + Zotero/Obsidian 笔记保存；通用速读/跨论文对比 → paper-read；结构化分析+PPT → paper-analyst；方法论教学 → paper-reading-guide；双语全文对照 → nature-reader。
 context: fork
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch
 ---
