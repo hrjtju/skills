@@ -1,7 +1,7 @@
 ---
 name: swanlab
 description: |
-  把 AI 训练进度实时同步/可视化到 SwanLab 云端（类 Weights & Biases）：安装登录、给 PyTorch / Lightning / Transformers / LLaMA-Factory 训练脚本打点记录指标（init/log/finish）、离线训练完再补传（swanlab sync）、断点续训（resume）、分布式并行共享（parallel），并用在线看板查看进度。当用户要"同步训练进度""记录训练指标""跟踪实验""训练可视化"，或提到 SwanLab、swanlab、wandb 替代、实验跟踪、断点续训时使用。路由：训练过程跟踪与实验记录 → 本 skill；数据分析/论文配图 → nature-figure / scipilot；非训练记录类写作 → nature-writing。
+  把 AI 训练进度实时同步/可视化到 SwanLab 云端（类 Weights & Biases）：安装登录、给 PyTorch / Lightning / Transformers / LLaMA-Factory 训练脚本打点记录指标（init/log/finish）、离线训练完再补传（swanlab sync）、断点续训（resume）、分布式并行共享（parallel），并用在线看板查看进度（默认示例为 PyTorch 手写循环与 Lightning）。当用户要"同步训练进度""记录训练指标""跟踪实验""训练可视化"，或提到 SwanLab、swanlab、wandb 替代、实验跟踪、断点续训时使用。路由：训练过程跟踪与实验记录 → 本 skill；数据分析/论文配图 → nature-figure / scipilot；非训练记录类写作 → nature-writing。
 version: 1.0.0
 license: MIT
 metadata:
@@ -149,17 +149,72 @@ swanlab.init(parallel="shared", id="my-distributed-run")  # 各进程 key 相同
 - **云端**：打开 [swanlab.cn](https://swanlab.cn) 项目页，看折线、媒体、日志、硬件监控。
 - **本地（local/offline 数据）**：`swanlab watch` 在本地开离线看板。
 
-## 框架集成速查（指针）
+## 框架集成（默认：PyTorch 手写循环 + Lightning）
 
-本 skill 不内嵌各框架的完整封装，给你打点思路后去官方集成页找对应封装：
+本 skill 以 **PyTorch 手写循环** 与 **PyTorch Lightning** 为默认示例（见 `references/` 两个模板），其余框架列出最简接入点。接入只为把训练进度送进 SwanLab，**训练/数据代码仍由你写**。
 
-- **PyTorch（手写循环）**：见 `references/pytorch-training-sync.md`（最通用的模板）。
-- **PyTorch Lightning**：`swanlab` 提供 `SwanLabLogger`，`Trainer(logger=SwanLabLogger(...))`。
-- **HuggingFace Transformers**：`Trainer` 里挂 `SwanLabCallback` 或集成 `swanlab` 的 `trainer` 集成。
-- **LLaMA-Factory / Swift / Ultralytics / MMDetection / SB3 / 各种 RL 框架**：官方 doc 有对应集成入口。
-- **已有 TensorBoard / W&B / MLflow 记录**：SwanLab 提供 `swanlab convert`/集成把现有事件导入。
+### PyTorch（手写训练循环）— 默认 #1
 
-> 集成入口见 SwanLab 官方文档的「集成」章节。
+最通用：`swanlab.init(project=..., config={...})` → 循环里 `swanlab.log({...})` → 结束 `finish()`。详见 `references/pytorch-training-sync.md`。
+
+### PyTorch Lightning — 默认 #2
+
+```python
+from swanlab.integration.pytorch_lightning import SwanLabLogger
+
+swanlab_logger = SwanLabLogger(project="my-project")   # 参数与 swanlab.init 一致
+
+trainer = pl.Trainer(logger=swanlab_logger)
+trainer.fit(model, train_loader, val_loader)
+```
+
+Lightning 里 `self.log("train_loss", loss)` 会自动记进实验。多次 `trainer.fit`（如 N 折）时，每次 fit 后加 `swanlab_logger.experiment.finish()`。详见 `references/pytorch-lightning-sync.md`。
+
+### HuggingFace Transformers
+
+- `transformers >= 4.50.0`：`TrainingArguments(..., report_to="swanlab")` 一行接入；项目/工作空间可设 `SWANLAB_PROJECT` / `SWANLAB_WORKSPACE` 环境变量。
+- `transformers < 4.50.0`：`from swanlab.integration.transformers import SwanLabCallback` → `Trainer(..., callbacks=[SwanLabCallback(project=...)])`。
+
+详见 `references/transformers-hf-sync.md`。
+
+### LLaMA-Factory（LLM 微调）
+
+训练 yaml 里加：
+
+```yaml
+use_swanlab: true
+swanlab_project: your_project
+swanlab_run_name: your_run
+```
+
+### veRL（RL 训练）
+
+启动命令加 `trainer.logger=['console','swanlab']`。
+
+### Ultralytics（YOLO）
+
+```python
+from ultralytics import YOLO
+from swanlab.integration.ultralytics import add_swanlab_callback
+
+model = YOLO("yolov8n.yaml")
+add_swanlab_callback(model, project="...")   # 可在回调里自定义项目/实验名
+model.train(data="./coco128.yaml", epochs=3, imgsz=320)
+```
+
+### Stable-Baselines3（强化学习）
+
+```python
+from swanlab.integration.sb3 import SwanLabCallback
+
+model.learn(total_timesteps=..., callback=SwanLabCallback())
+```
+
+### 其它框架（官方「集成」章节逐一接入）
+
+Swift / Unsloth / XTuner / MindSpeed-RL / PaddleDetection / PaddleYOLO / MMDetection / MMSegmentation / fastai / XGBoost / LightGBM / CatBoost / Keras / Hydra / **TensorBoard / W&B / MLflow**。已用 W&B / TensorBoard / MLflow 记录的旧事件可用 `swanlab convert` 导入。
+
+> **已有训练代码但没打点？** 选一条路径：手写循环就手动插 `init`/`log`；已有 Logger 的回调类（Lightning/TF/SB3/Ultralytics）就直接挂对应 SwanLab 回调，改动最小。
 
 ## CLI 参考
 
@@ -190,7 +245,8 @@ swanlab sync ./swanlog/run-xxx --id <实验ID>  # 不想新建实验，往原实
 
 ## 自动化 / CI 建议
 
-1. 登录凭证由 `SWANLAB_API_KEY` 环境变量提供，**不写死在脚本里、不进 git**。
+1. 登录凭证由 `SWANLAB_API_KEY` 环境变量提供，**不写死在脚本里、不进 git**。本机 key 已存入**用户级环境变量**（Windows `[Environment]::SetEnvironmentVariable`，User 作用域）与 WSL `~/.bashrc`（`export SWANLAB_API_KEY=...`），登录时自动读取，无需交互。
+2. 若是**多人共用机器**：`swanlab login --local` 只把凭证存到当前目录 `.swanlab/`；或用 `SWANLAB_API_KEY` 环境变量覆盖，不落盘。
 2. 训练脚本用 `mode=os.environ.get("SWANLAB_MODE", "online")` 便于切换上线/离线。
 3. 需要多账号隔离/多人共用机器时：`swanlab login --local` 只把凭证存到当前目录 `.swanlab/`（会自动生成 `.gitignore`）。
 
@@ -208,4 +264,8 @@ swanlab sync ./swanlog/run-xxx --id <实验ID>  # 不想新建实验，往原实
 
 | 文件 | 用途 |
 |------|------|
-| `references/pytorch-training-sync.md` | PyTorch 手写循环打点模板（含 resume / define_metric / offline 分支） |
+| `references/pytorch-training-sync.md` | **默认 #1** PyTorch 手写循环打点模板（含 resume / define_metric / offline） |
+| `references/pytorch-lightning-sync.md` | **默认 #2** PyTorch Lightning 集成（SwanLabLogger + Trainer） |
+| `references/transformers-hf-sync.md` | HuggingFace Transformers（report_to 与 SwanLabCallback 两路） |
+| `references/llm-rl-frameworks-sync.md` | LLaMA-Factory / veRL / Swift 等 LLM 与 RL 训练接入 |
+| `references/cv-sb3-sync.md` | Ultralytics / Stable-Baselines3 接入 |

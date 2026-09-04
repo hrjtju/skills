@@ -123,3 +123,14 @@ User asked for a skill that syncs their training progress to SwanLab
 - **Code boundary respected:** the PyTorch file is an *adaptable template* (uses `← 你的代码` markers), not a
   complete training script, per the "先做设计/小片段，不替写完整脚本" rule. User explicitly requested the skill,
   so templates are the deliverable.
+
+### Follow-up 2026-09-04 — framework integrations + env var
+
+- Per user: default examples are **PyTorch hand-written loop + Lightning**; added concrete integration snippets
+  for Transformers (report_to / SwanLabCallback), LLaMA-Factory (yaml flags), veRL (`trainer.logger=['swanlab']`),
+  Ultralytics (`add_swanlab_callback`), SB3 (`SwanLabCallback`), plus a long-tail pointer table.
+- New references: `pytorch-lightning-sync.md`, `transformers-hf-sync.md`, `llm-rl-frameworks-sync.md`,
+  `cv-sb3-sync.md` (all adaptable templates with `← 你的代码`, not full scripts).
+- Stored the user's SwanLab key permanently: Windows User env var via `[Environment]::SetEnvironmentVariable`
+  (verified len=21, masked) + WSL `~/.bashrc` `export SWANLAB_API_KEY=...`. **Key never written into any git
+  file** (only documented as `SWANLAB_API_KEY`, masked in logs).
