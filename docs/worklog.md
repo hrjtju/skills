@@ -89,3 +89,43 @@ pointing them elsewhere.
 - The first leftover-scan was missing matches: a `grep -v "latex-academic"` filter hid lines whose file *path*
   contained `latex-academic` (git prints `path:line`). Re-scanned without that filter to find the real stale names.
 - Reconcile is purely text/path except `audit.py`, which is functional; verified it still imports/compiles.
+
+## 2026-09-04 — Install official PyTRIO skill + fill doc gaps
+
+### Task
+User wants the official `SwanHubX/pytrio-skill` installed here, diffed against the official docs
+(https://docs.pytrio.com/docs), with missing parts filled in.
+
+### What I did
+- Copied the official skill (cloned from github.com/SwanHubX/pytrio-skill @ v0.2.1) into `pytrio-skill/`
+  (SKILL.md + 14 references + 11 examples), onto a new branch `feat/pytrio-skill`.
+- **Diff vs official docs.** Crawled all 30 sitemap pages; read the API refs (ServiceClient/TrainingClient/
+  SamplingClient/RestClient/Datum/ModelInput/AdamParams/SamplingParams), the guides (train/sample/save/resume/
+  download/loss_fn/custom_loss/async/vision), and the advanced pages (configuration/datasets/openai/
+  compute_logprobs). Found 4 concrete content gaps + 1 doc-index URL bug.
+- **Gap 1 — doc-index link bug:** every `docs.pytrio.cn/...` link 301-redirects; the content path
+  `https://docs.pytrio.com/docs/content/<route>/content.md` returns 200. Standardised all core/API/example
+  table links to `.com` (38 links), corrected the URL-rule example block, fixed 3 leftover `.cn` links in
+  `chat-huanhuan.md`/`opsd.md`/`search-r1.md`, and added the missing `环境变量配置` page to the core table.
+- **Gap 2 — env/config:** added `references/config.md` (env vars PYTRIO_API_KEY/BASE_URL/ENV/LOG_LEVEL,
+  `pytrio.configure(...)`, load order, client config snapshot).
+- **Gap 3 — logprobs:** added `references/logprobs.md` (sample() vs compute_logprobs(), return shapes
+  `list[float|None]`, first token None, include_prompt_logprobs/topk_prompt_logprobs, OPD teacher-logprob
+  alignment).
+- **Gap 4 — OpenAI endpoint:** added `references/openai.md` (base_url `https://pytrio.com/api/openai/v1`,
+  chat/stream/completions, image-only-Base64 restriction).
+- **Gap 5 — RestClient / download weights:** added `references/rest-api.md` (get_checkpoint_archive_url +
+  requests download, list checkpoints/runs/sessions, delete_checkpoint).
+- Wired the new refs into `SKILL.md` (a new "进阶：配置、logprobs、下载与 OpenAI 部署" section + extra
+  routing rows) and into `references/doc-index.md` (capability table + reading notes).
+
+### Notes / open items
+- The engine-internal `prefill-cache` and `clock-cycle` pages are conceptual (token/cost accounting); left as
+  doc-index pointers rather than dedicated refs, since `dapo.md` already covers token/cost accounting.
+- Not pushed; left on `feat/pytrio-skill` for review.
+
+### Reflection
+- The official skill's design is "thin references + fetch remote Markdown at runtime". The real gaps are
+  where a topic is core enough that relying on a live fetch is fragile (config, OpenAI endpoint, download,
+  logprobs semantics) — exactly what agents misread. The `.cn`→`.com` bug was the most silently damaging fix
+  (every URI the skill told the agent to open redirected).
