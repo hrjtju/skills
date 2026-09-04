@@ -89,3 +89,37 @@ pointing them elsewhere.
 - The first leftover-scan was missing matches: a `grep -v "latex-academic"` filter hid lines whose file *path*
   contained `latex-academic` (git prints `path:line`). Re-scanned without that filter to find the real stale names.
 - Reconcile is purely text/path except `audit.py`, which is functional; verified it still imports/compiles.
+
+## 2026-09-04 — Add `swanlab` skill (sync training progress to SwanLab cloud)
+
+### Task
+User asked for a skill that syncs their training progress to SwanLab
+(https://docs.swanlab.cn/guide_cloud/general/what-is-swanlab.html).
+
+### Approach
+- **No Firecrawl CLI in this WSL env** (`firecrawl: command not found`); used `curl` instead.
+- SwanLab's docs expose an **LLM-optimised `.md`** rendering (the page said "read better docs at
+  /guide_cloud/general/what-is-swanlab.md"), so I fetched `*.md` instead of scraping HTML — far cleaner.
+- Pulled `quick-start.md`, `py-init.md`, `py-log.md`, `py-login.md`, `py-define_metric.md`,
+  `cli-swanlab-login.md`, `cli-swanlab-sync.md`, `environment-variable.md` and the `sitemap.xml` (to derive
+  correct slugs after several 404 guesses for `create-experiment`/`log-metric`).
+
+### Deliverable
+- `swanlab/SKILL.md` — router + cheat-sheet: what SwanLab is, the 4 `mode` (online/offline/local/disabled),
+  install+login, core API tables (`init`/`log`/`define_metric`/`finish`), resume/断点续训, `parallel="shared"`,
+  `swanlab sync`/`watch` CLI, env vars, automation/CI notes, troubleshooting, framework-integration pointers.
+- `swanlab/references/pytorch-training-sync.md` — adaptable PyTorch hand-written-loop synchronisation template.
+
+### Notes / open items
+- **Load path:** skill single-source is this repo (`.agents/skills`). To make it live in a running session,
+  wire it via the junction (`C:\Users\Ivy\.claude\skills` for Claude; pi's `.pi\agent\skills` stays empty).
+  Wired-up, not done here.
+- Content is per upstream docs (v0.10.0 API); if SwanLab upgrades, re-sync the reference snippets.
+
+### Reflection
+- **Why curl + `.md`:** Firecrawl absent, and SwanLab publishes the docs as markdown already — scraping HTML
+  would have lost tables and doubled effort.
+- **Why branch `feat/swanlab-skill`:** repo default is feat/fix branches; never commit to master/main directly.
+- **Code boundary respected:** the PyTorch file is an *adaptable template* (uses `← 你的代码` markers), not a
+  complete training script, per the "先做设计/小片段，不替写完整脚本" rule. User explicitly requested the skill,
+  so templates are the deliverable.
