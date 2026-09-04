@@ -1,6 +1,6 @@
 # Routing Rules — Full Detail
 
-Extended routing guidance for `latex-paper-en`. The SKILL.md keeps only the core rules; this file preserves the full decision notes.
+Extended routing guidance for `latex-academic`. The SKILL.md keeps only the core rules; this file preserves the full decision notes.
 
 ## Module inference
 

@@ -600,6 +600,16 @@ def extract_text_with_ocr(pdf_path):
     return text
 ```
 
+## Windows / PowerShell pitfalls (recorded 2026-09-03)
+
+Environment-specific notes for running PDF tooling on Windows; these are shell/OS issues, not command or library bugs.
+
+- **Console codepage breaks CJK output**: Windows (Chinese) consoles default to code page GBK. Printing extracted CJK text can raise `UnicodeEncodeError: 'gbk' codec can't encode character`. Fix: set `$env:PYTHONUTF8="1"` (Python UTF-8 mode) and `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8`, or write results to a UTF-8 file (`open(path, 'w', encoding='utf8')`) and read it back instead of printing to stdout.
+- **Windows paths in Python strings**: `$env:TEMP` expands to `C:\Users\...\Temp`; backslashes become Python escapes (`\U`, `\t`) → `SyntaxError: 'unicodeescape'`. Use forward slashes (`C:/Users/...`), raw strings (`r'...'`), or `os.environ` / `pathlib`.
+- **MiKTeX `pdftotext`/`pdftoppm` need a finished setup**: on a fresh MiKTeX install they fail with "It seems that this is a fresh TeX installation. Please finish the setup before proceeding." and a `CreateDirectoryW ... path="%APPDATA%\MiKTeX\2.9"` access error. Run `miktexsetup --shared=yes` first, or prefer Python libraries (`pypdf`, `pdfplumber`, `pypdfium2`).
+- **PowerShell surfaces CLI stderr as errors**: a tool that writes to stderr (even if it still produces output) is reported as a `NativeCommandError`. Don't conclude the command failed solely from that; check exit code / whether the output file was written.
+- **PowerShell regex / `$` escaping**: put regex in single quotes; `$` in double-quoted strings triggers variable expansion, and `!`/`(?!` can be parsed by PowerShell. Prefer doing heavy regex matching in Python (raw strings).
+
 ## License Information
 
 - **pypdf**: BSD License

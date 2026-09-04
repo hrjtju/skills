@@ -2,8 +2,8 @@
 """
 Multi-file LaTeX document loader with source-location mapping.
 
-Single authoritative include resolver for the latex-paper-en skill scripts
-(ported from latex-thesis-zh/scripts/tex_loader.py). Real papers often keep
+Single authoritative include resolver for the latex-academic skill scripts
+(shared include resolver). Real papers often keep
 ``main.tex`` as an ``\\input{sections/intro}`` skeleton; analyzers must see the
 assembled document while still reporting diagnostics as ``source:line``.
 

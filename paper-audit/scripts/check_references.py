@@ -4,7 +4,7 @@ Figure/Table/Equation Reference Integrity Checker — router version.
 
 Selects LaTeX or Typst checking mode based on file extension:
   .tex  → LaTeX patterns (same as latex-academic)
-  .typ  → Typst patterns (same as typst-paper)
+  .typ  → Typst patterns
   .pdf  → Skip with informational message (cannot extract label/ref from PDF)
 
 Usage:

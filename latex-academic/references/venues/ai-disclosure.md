@@ -38,4 +38,4 @@ drafting text, generating code, or producing analysis.
 
 > Sources: per-venue 2026 author guides and CFPs; ICMJE 2026-01 Recommendations;
 > IEEE / ACM / Springer Nature / Elsevier AI policy pages; arXiv help/blog.
-> See the parent audit's `latex-paper-en-venue-factcheck.md` for the full citation list.
+> See the parent audit's `latex-academic-venue-factcheck.md` for the full citation list.

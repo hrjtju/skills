@@ -57,7 +57,7 @@ SKILL.md preserving all sub-files (a); reference the most-used latex-document sc
   path remains dangling; reconcile in a follow-up.
 - `references/tooling/` carries only the curated latex-document content; the rest of the old
   `latex-document-skill` (e.g. PDF form-fill scripts) was intentionally not carried per decision (4).
-- The merged skill's reference to `paper-audit`/`latex-thesis-zh`/`nature-*`/`paper2ppt` is intended delegation.
+- The merged skill's reference to `paper-audit`/`nature-*`/`paper2ppt` is intended delegation.
 
 ### Reflection
 - **Why rename-as-base:** `latex-paper-en` was already a clean module-router skill with the richest reference/script
@@ -70,3 +70,22 @@ SKILL.md preserving all sub-files (a); reference the most-used latex-document sc
   repaired by re-inserting the row/header and appending the new modules in one replacement. A relative-path
   `cp` failed (wrong `../../..`) — switched to absolute paths. Both were cheap to recover because the changes
   were still uncommitted and each step was checked before proceeding.
+
+## 2026-09-03 (follow-up) — Reconcile `latex-thesis-zh` / `typst-paper` pointers (option B)
+
+User chose B: those sibling skills don't exist in this repo, so neutralise the dangling references instead of
+pointing them elsewhere.
+
+- `paper-audit/scripts/audit.py`: removed `SCRIPTS_ZH` / `SCRIPTS_TYPST`; `_resolve_script` now unifies on
+  `[SCRIPTS_EN]` for all formats/languages (this also matches prior effective behaviour: `zh` already fell
+  through to EN, and `.typ` always returned None because the dir never existed).
+- Removed the `latex-thesis-zh` delegation note from `latex-academic/SKILL.md` description.
+- Renamed stale `latex-paper-en` references in `latex-academic` docstrings/comments and fixtures
+  (`tex_loader.py`, `analyze_abstract.py`, evals fixture README, `routing-rules.md`, `ai-disclosure.md`),
+  and in `paper-audit` docs/comments (TROUBLESHOOTING.md list, `check_references.py`, `tex_loader.py`).
+- Kept the `/latex-fmt`, `/latex-polish`, `/latex-rescue` aliases (deliberate; they route to `latex-academic`).
+
+### Reflection
+- The first leftover-scan was missing matches: a `grep -v "latex-academic"` filter hid lines whose file *path*
+  contained `latex-academic` (git prints `path:line`). Re-scanned without that filter to find the real stale names.
+- Reconcile is purely text/path except `audit.py`, which is functional; verified it still imports/compiles.

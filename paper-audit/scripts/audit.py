@@ -365,8 +365,6 @@ VENUE_CONFIG: dict[str, dict] = {
 SKILLS_ROOT = Path(__file__).resolve().parent.parent.parent
 SCRIPTS_AUDIT = Path(__file__).resolve().parent  # paper-audit's own scripts
 SCRIPTS_EN = SKILLS_ROOT / "latex-academic" / "scripts"
-SCRIPTS_ZH = SKILLS_ROOT / "latex-thesis-zh" / "scripts"
-SCRIPTS_TYPST = SKILLS_ROOT / "typst-paper" / "scripts"
 
 
 def _resolve_script(check_name: str, lang: str, fmt: str) -> Path | None:
@@ -409,13 +407,9 @@ def _resolve_script(check_name: str, lang: str, fmt: str) -> Path | None:
         if path.exists():
             return path
 
-    # Choose script directory based on format and language
-    if fmt == ".typ":
-        candidates = [SCRIPTS_TYPST]
-    elif lang == "zh":
-        candidates = [SCRIPTS_ZH, SCRIPTS_EN]
-    else:
-        candidates = [SCRIPTS_EN]
+    # Unify on the merged latex-academic skill; the per-language/per-format
+    # siblings (latex-thesis-zh, typst-paper) are no longer maintained.
+    candidates = [SCRIPTS_EN]
 
     for scripts_dir in candidates:
         path = scripts_dir / script_name

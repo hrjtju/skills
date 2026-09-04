@@ -1,6 +1,6 @@
 ---
 name: latex-academic
-description: Unified LaTeX skill for academic papers and production documents. Covers creating documents from scratch, compiling, venue formatting, bibliography/citation checks, section writing, logic, related work, tables, pseudocode, figures/diagrams (TikZ/PGF, mermaid, graphviz), debug/rescue of compile errors, de-AI polish, translation, adaptation, submissions, PDF→LaTeX reconstruction, and cross-referencing (cleveref). Use latex-thesis-zh for Chinese theses and paper-audit for critique; paper2ppt / nature-* for decks/readers.
+description: Unified LaTeX skill for academic papers and production documents. Covers creating documents from scratch, compiling, venue formatting, bibliography/citation checks, section writing, logic, related work, tables, pseudocode, figures/diagrams (TikZ/PGF, mermaid, graphviz), debug/rescue of compile errors, de-AI polish, translation, adaptation, submissions, PDF→LaTeX reconstruction, and cross-referencing (cleveref). Use paper-audit for critique; nature-* / paper2ppt for decks/readers.
 when_to_use: >-
   Trigger on prompts like "fix my LaTeX", "proofread my IEEE paper", "rewrite related work",
   "find the research gap", "format citations", "make a three-line table", "write pseudocode",

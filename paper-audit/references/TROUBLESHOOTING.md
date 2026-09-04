@@ -6,7 +6,7 @@
 | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | No file path provided                                  | Ask user for a valid `.tex`, `.typ`, or `.pdf` file                                                                                                  |
 | Script execution fails                                 | Report the command, exit code, and stderr output                                                                                                     |
-| Missing sibling skill scripts                          | Check that `latex-academic/scripts/`, `latex-thesis-zh/scripts/`, or `typst-paper/scripts/` exist                                                    |
+| Missing sibling skill scripts                          | Check that `latex-academic/scripts/` exists                                                              |
 | PDF checks limited                                     | PDF mode skips format/bib/figures checks; only visual and content analysis available                                                                 |
 | `--venue` not recognized                               | Use one of: `neurips`, `iclr`, `icml`, `ieee`, `acm`, `thesis-zh`                                                                                    |
 | ScholarEval LLM dimensions show N/A                    | Run with `--scholar-eval`, then provide LLM scores via `--llm-json`                                                                                  |
