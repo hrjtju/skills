@@ -260,6 +260,16 @@ swanlab sync ./swanlog/run-xxx --id <实验ID>  # 不想新建实验，往原实
 - **`define_metric` 不生效**：指标已被 `log` 过后定义无效，需在首次 `log` 前定义；多媒体忽略 `x_axis`。
 - **`resume` 报错**：确认 id 存在、不是克隆实验、`must` 模式下 id 必传。
 
+## 踩坑速查（本次同步经验）
+
+除上面「常见坑」外，这几条是本次实际踩到、最影响上手速度的：
+
+- **免登录跑起来**：SwanLab 登录时优先读环境变量 `SWANLAB_API_KEY`（高于本地存储）。本机已把 key 存入 **Windows 用户级环境变量** 与 WSL `~/.bashrc`（`export SWANLAB_API_KEY=...`），无需再 `swanlab login`；**不要把 key 写进脚本或 git**。改完环境变量要**重开终端**才生效。
+- **同步路径先想清楚再写**：能联网 → 默认 `mode="online"` 边训边传；集群/内网 → 训练时 `mode="offline"` 存 `swanlog/`，跑完用 `swanlab sync ./swanlog/run-xxx`（带 `--id` 不想新建实验时合并）；只想本地看 → `mode="local"` + `swanlab watch`。
+- **`define_metric` 趁早**：只在首次 `log` 前有效；图片/音频忽略 `x_axis`；同项目同指标只有一张图，跨 run 定义不覆盖。
+- **`resume` 有边界**：`must` 模式必须传 `id` 且实验必须存在；项目克隆出的实验不能 resume；`id` 是实验「环境」页里的 21 位字符串。
+- **框架接入点因版本不同**：Transformers `>=4.50` 用 `TrainingArguments(report_to="swanlab")`，`<4.50` 用 `SwanLabCallback`；Lightning 多次 `trainer.fit`（N 折）记得 `logger.experiment.finish()`；分布式用回调或 `parallel="shared"` 防重复实验。
+
 ## 相关文件
 
 | 文件 | 用途 |
